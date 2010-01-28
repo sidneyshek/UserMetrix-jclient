@@ -1,12 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.usermetrix</groupId>
-  <artifactId>UserMetrix-jclient</artifactId>
+  <artifactId>UserMetrix-jclient</artifactId>  
+  <version>0.0.1</version>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>UserMetrix-jclient</name>
   <url>http://usermetrix.com</url>
+
+  <!-- The location for publishing java library. -->
+  <distributionManagement>
+    <repository>
+      <id>repo</id>
+      <name>uispec4j</name>
+      <url>scp://usermetrix.com/var/www/maven2</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
