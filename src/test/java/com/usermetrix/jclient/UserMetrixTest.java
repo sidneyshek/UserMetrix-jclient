@@ -28,7 +28,8 @@ public final class UserMetrixTest extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        UserMetrix.initalise();
+        Configuration c = new Configuration();
+        UserMetrix.initalise(c);
         um = UserMetrix.getInstance(UserMetrixTest.class);
     }
 

@@ -3,16 +3,26 @@ package com.usermetrix.jclient;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Class to send a log in the below format to usermetrix.com.
  *
  * v:1
  * system:
+ *   id: <uuid>
  *   os: <tag>
  *   start: <time&date>
+ * meta:
+ *   <key> - <value>
  * log:
- *   <nano> - <source> - <msg>
+ *   - type: <enum>
+ *     time: <time&date>
+ *     source: <source class>
+ *     message: <msg>
  * end: <time&date>
  */
 public final class UserMetrix {
@@ -23,6 +33,9 @@ public final class UserMetrix {
     /** The current version of the log file this client generates. */
     private static final int LOG_VERSION = 1;
 
+    /** The format to use when generating timestamps. */
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
     /* Members of UserMetrix.  -----------------------------------------------*/
     /** The current source for log messages. */
     private Class logSource;
@@ -30,22 +43,32 @@ public final class UserMetrix {
     /** The destination tmp file for the UserMetrix log. */
     private BufferedWriter logWriter;
 
+    /** The clock that we fetch the time from. */
+    private Calendar clock;
+
+    private Configuration config;
+
     /** Private constructor. */
-    private UserMetrix() {
+    private UserMetrix(final Configuration configuration) {
         logSource = null;
         logWriter = null;
+
+        config = configuration;
+        clock = Calendar.getInstance();
     }
 
     /**
      * Initalise the UserMetrix log - call this when you start your application.
      */
-    public static void initalise() {
+    public static void initalise(final Configuration configuration) {
         try {
             if (instance == null) {
-                instance = new UserMetrix();
+                instance = new UserMetrix(configuration);
                 FileWriter fstream = new FileWriter("usermetrix.log");
                 instance.setLogWriter(new BufferedWriter(fstream));
                 instance.startLog();
+                UUID u = UUID.randomUUID();
+                System.out.println(u.toString());
             }
         } catch (Exception e) {
             instance = null;
@@ -87,7 +110,13 @@ public final class UserMetrix {
     public void error(final String message) {
         try {
             if (logWriter != null) {
-                logWriter.write("  <nano> - " + logSource + " - " + message);
+                logWriter.write("  - type: error");
+                logWriter.newLine();
+                logWriter.write("    time: " + SDF.format(clock.getTime()));
+                logWriter.newLine();
+                logWriter.write("    source: " + logSource);
+                logWriter.newLine();
+                logWriter.write("    message: " + message);
                 logWriter.newLine();
             }
         } catch (IOException e) {
@@ -114,10 +143,31 @@ public final class UserMetrix {
                 logWriter.newLine();
                 logWriter.write("system:");
                 logWriter.newLine();
-                logWriter.write("  os: <tag>");
+
+                // Write the unique client identifier to the log.
+                logWriter.write("  id: ");
+                logWriter.write("<UUID>");
                 logWriter.newLine();
-                logWriter.write("  start: <time&date>");
+
+                // Write details of the operating system out to the log.
+                logWriter.write("  os: ");
+                logWriter.write(System.getProperty("os.name") + " - ");
+                logWriter.write(System.getProperty("os.version"));
                 logWriter.newLine();
+
+                // Write the application start time out to the log.
+                logWriter.write("  start: ");
+                logWriter.write(SDF.format(clock.getTime()));
+                logWriter.newLine();
+
+                // Dump meta data stored in the configuration.
+                logWriter.write("meta:");
+                for (Map.Entry<String, String> e : config.getMetaData()) {
+                    logWriter.write("   - [" + e.getKey() + ", " + e.getValue() + "]");
+                }
+                logWriter.newLine();
+
+                // Begin the log.
                 logWriter.write("log:");
                 logWriter.newLine();
             }
@@ -129,7 +179,9 @@ public final class UserMetrix {
     private void finishLog() {
         try {
             if (logWriter != null) {
-                logWriter.write("end:<time&date>");
+                // Write the application end time out to the log.
+                logWriter.write("end: ");
+                logWriter.write(SDF.format(clock.getTime()));
                 logWriter.newLine();
                 logWriter.close();
             }
