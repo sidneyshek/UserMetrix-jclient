@@ -16,7 +16,6 @@ public final class Configuration {
 
     public Configuration() {
         metadata = new HashMap<String, String>();
-
     }
 
     public void addMetaData(final String key, final String value) {

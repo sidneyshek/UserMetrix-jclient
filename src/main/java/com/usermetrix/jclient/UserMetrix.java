@@ -1,6 +1,9 @@
 package com.usermetrix.jclient;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -17,7 +20,7 @@ import java.util.UUID;
  *   os: <tag>
  *   start: <time&date>
  * meta:
- *   <key> - <value>
+ *   -[<key>, <value>]
  * log:
  *   - type: <enum>
  *     time: <time&date>
@@ -40,11 +43,17 @@ public final class UserMetrix {
     /** The current source for log messages. */
     private Class logSource;
 
+    /** The destination stream for the tmp usermetrix log. */
+    private FileWriter logStream;
+
     /** The destination tmp file for the UserMetrix log. */
     private BufferedWriter logWriter;
 
     /** The clock that we fetch the time from. */
     private Calendar clock;
+
+    /** The UUID for this client. */
+    private String clientID;
 
     private Configuration config;
 
@@ -64,13 +73,37 @@ public final class UserMetrix {
         try {
             if (instance == null) {
                 instance = new UserMetrix(configuration);
-                FileWriter fstream = new FileWriter("usermetrix.log");
-                instance.setLogWriter(new BufferedWriter(fstream));
-                instance.startLog();
-                UUID u = UUID.randomUUID();
-                System.out.println(u.toString());
+
+                // Determine UUID for this client.
+                File idFile = new File("usermetrix.id");
+
+                // ID file exists on disk - read UUID from file.
+                if (idFile.exists()) {
+                    FileReader idStream = new FileReader("usermetrix.id");
+                    BufferedReader idReader = new BufferedReader(idStream);
+                    instance.setUniqueID(idReader.readLine());
+                    idReader.close();
+                    idStream.close();
+
+                // ID file does not exist - generate a new UUID.
+                } else {
+                    UUID u = UUID.randomUUID();
+                    instance.setUniqueID(u.toString());
+
+                    FileWriter idStream = new FileWriter("usermetrix.id");
+                    BufferedWriter idWriter = new BufferedWriter(idStream);
+                    idWriter.write(u.toString());
+                    idWriter.newLine();
+                    idWriter.close();
+                    idStream.close();
+                }
+
+                instance.setLogDestination("usermetrix.log");
+                instance.startLog();                
             }
+
         } catch (Exception e) {
+            System.out.println("UserMetrix: Unable to initalise usermetrix." + e);
             instance = null;
         }
     }
@@ -120,7 +153,7 @@ public final class UserMetrix {
                 logWriter.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Unable to write to file:" + e.toString());
+            System.out.println("UserMetrix: Unable to write to file." + e.toString());
         }
     }
 
@@ -145,8 +178,7 @@ public final class UserMetrix {
                 logWriter.newLine();
 
                 // Write the unique client identifier to the log.
-                logWriter.write("  id: ");
-                logWriter.write("<UUID>");
+                logWriter.write("  id: " + clientID);
                 logWriter.newLine();
 
                 // Write details of the operating system out to the log.
@@ -162,17 +194,18 @@ public final class UserMetrix {
 
                 // Dump meta data stored in the configuration.
                 logWriter.write("meta:");
-                for (Map.Entry<String, String> e : config.getMetaData()) {
-                    logWriter.write("   - [" + e.getKey() + ", " + e.getValue() + "]");
-                }
                 logWriter.newLine();
+                for (Map.Entry<String, String> e : config.getMetaData()) {
+                    logWriter.write("  - [" + e.getKey() + ", " + e.getValue() + "]");
+                    logWriter.newLine();
+                }                
 
                 // Begin the log.
                 logWriter.write("log:");
                 logWriter.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Unable to write file:" + e.toString());
+            System.out.println("UserMetrix: Unable to write file." + e.toString());
         }
     }
 
@@ -186,7 +219,7 @@ public final class UserMetrix {
                 logWriter.close();
             }
         } catch (IOException e) {
-            System.out.println("Unable to close file:" + e.toString());
+            System.out.println("UserMetrix: Unable to close file." + e.toString());
         }
     }
 
@@ -194,8 +227,17 @@ public final class UserMetrix {
         logSource = s;
     }
 
-    private void setLogWriter(final BufferedWriter o) {
-        logWriter = o;
+    private void setLogDestination(final String logFile) {
+        try {
+            logStream = new FileWriter(logFile);
+            logWriter = new BufferedWriter(logStream);
+        } catch (IOException e) {
+            System.out.println("UserMetrix: Unable to set log location." + e.toString());
+        }
+    }
+
+    private void setUniqueID(final String id) {
+        clientID = id;
     }
 }
 
