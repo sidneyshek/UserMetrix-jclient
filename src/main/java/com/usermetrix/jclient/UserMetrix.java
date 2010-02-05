@@ -2,10 +2,15 @@ package com.usermetrix.jclient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
@@ -38,6 +43,14 @@ public final class UserMetrix {
 
     /** The format to use when generating timestamps. */
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    private static final String LINE_END = "\r\n";
+
+    private static final String TWO_HYPHENS = "--";
+
+    private static final String BOUNDARY =  "*****";
+
+    private static int BUFFER_SIZE = 1048576;
 
     /* Members of UserMetrix.  -----------------------------------------------*/
     /** The current source for log messages. */
@@ -99,11 +112,11 @@ public final class UserMetrix {
                 }
 
                 instance.setLogDestination("usermetrix.log");
-                instance.startLog();                
+                instance.startLog();
             }
 
         } catch (Exception e) {
-            System.out.println("UserMetrix: Unable to initalise usermetrix." + e);
+            System.err.println("UserMetrix: Unable to initalise usermetrix." + e);
             instance = null;
         }
     }
@@ -153,7 +166,7 @@ public final class UserMetrix {
                 logWriter.newLine();
             }
         } catch (IOException e) {
-            System.out.println("UserMetrix: Unable to write to file." + e.toString());
+            System.err.println("UserMetrix: Unable to write to file." + e.toString());
         }
     }
 
@@ -198,14 +211,14 @@ public final class UserMetrix {
                 for (Map.Entry<String, String> e : config.getMetaData()) {
                     logWriter.write("  - [" + e.getKey() + ", " + e.getValue() + "]");
                     logWriter.newLine();
-                }                
+                }
 
                 // Begin the log.
                 logWriter.write("log:");
                 logWriter.newLine();
             }
         } catch (IOException e) {
-            System.out.println("UserMetrix: Unable to write file." + e.toString());
+            System.err.println("UserMetrix: Unable to write file." + e.toString());
         }
     }
 
@@ -217,9 +230,54 @@ public final class UserMetrix {
                 logWriter.write(SDF.format(clock.getTime()));
                 logWriter.newLine();
                 logWriter.close();
+                sendLog();
             }
         } catch (IOException e) {
-            System.out.println("UserMetrix: Unable to close file." + e.toString());
+            System.err.println("UserMetrix: Unable to close file." + e.toString());
+        }
+    }
+
+    private void sendLog() {
+        try {
+            // Send data
+            URL url = new URL("http://localhost:3000/project/log");
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
+
+            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            wr.writeBytes(TWO_HYPHENS + BOUNDARY + LINE_END);
+            wr.writeBytes("Content-Disposition: form-data; name=\"upload\";"
+                    + " filename=\"" + "usermetrix.log" +"\"" + LINE_END);
+            wr.writeBytes(LINE_END);
+
+            FileInputStream fileInputStream = new FileInputStream(new File("usermetrix.log"));
+            int bytesAvailable = fileInputStream.available();
+            int bufferSize = Math.min(bytesAvailable, BUFFER_SIZE);
+            byte[] buffer = new byte[bufferSize];
+
+            int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            while (bytesRead > 0) {
+                wr.write(buffer, 0, bufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            wr.writeBytes(LINE_END);
+            wr.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + LINE_END);
+            wr.flush();
+
+            // Get the response
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line; while ((line = rd.readLine()) != null) {
+                System.err.println(line);
+            }
+
+            fileInputStream.close();
+            wr.close();
+            rd.close();
+        } catch (Exception e) {
+            System.err.println("Unable to send log" + e);
         }
     }
 
@@ -232,7 +290,7 @@ public final class UserMetrix {
             logStream = new FileWriter(logFile);
             logWriter = new BufferedWriter(logStream);
         } catch (IOException e) {
-            System.out.println("UserMetrix: Unable to set log location." + e.toString());
+            System.err.println("UserMetrix: Unable to set log location." + e.toString());
         }
     }
 

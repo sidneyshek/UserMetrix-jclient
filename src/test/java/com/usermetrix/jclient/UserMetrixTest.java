@@ -1,6 +1,5 @@
 package com.usermetrix.jclient;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
 
 /**
@@ -26,6 +25,7 @@ public final class UserMetrixTest extends TestCase {
      *
      * @throws Exception If unable to setUp.
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         Configuration c = new Configuration();
@@ -39,6 +39,7 @@ public final class UserMetrixTest extends TestCase {
      *
      * @throws Exception If unable to tearDown.
      */
+    @Override
     protected void tearDown() throws Exception {
         UserMetrix.shutdown();
         super.tearDown();
@@ -55,7 +56,7 @@ public final class UserMetrixTest extends TestCase {
      * Test of error method, of class UserMetrix.
      */
     public void testError3args() {
-        um.error("Test Message", null);
+        um.error("Test Message 2", null);
     }
 
 }
