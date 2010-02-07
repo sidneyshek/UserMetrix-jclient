@@ -19,19 +19,20 @@ import java.util.UUID;
 /**
  * Class to send a log in the below format to usermetrix.com.
  *
- * v:1
+ * ---
+ * v: 1
  * system:
  *   id: <uuid>
  *   os: <tag>
  *   start: <time&date>
  * meta:
- *   -[<key>, <value>]
+ *   - [<key>, <value>]
  * log:
  *   - type: <enum>
- *     time: <time&date>
+ *     time: <milliseconds>
  *     source: <source class>
  *     message: <msg>
- * end: <time&date>
+ * duration: <milliseconds>
  */
 public final class UserMetrix {
 
@@ -69,6 +70,9 @@ public final class UserMetrix {
     private String clientID;
 
     private Configuration config;
+
+    /** Start time in milliseconds. */
+    private long startTime;
 
     /** Private constructor. */
     private UserMetrix(final Configuration configuration) {
@@ -158,7 +162,7 @@ public final class UserMetrix {
             if (logWriter != null) {
                 logWriter.write("  - type: error");
                 logWriter.newLine();
-                logWriter.write("    time: " + SDF.format(clock.getTime()));
+                logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
                 logWriter.newLine();
                 logWriter.write("    source: " + logSource);
                 logWriter.newLine();
@@ -185,7 +189,9 @@ public final class UserMetrix {
     private void startLog() {
         try {
             if (logWriter != null) {
-                logWriter.write("v:" + LOG_VERSION);
+                logWriter.write("---");
+                logWriter.newLine();
+                logWriter.write("v: " + LOG_VERSION);
                 logWriter.newLine();
                 logWriter.write("system:");
                 logWriter.newLine();
@@ -203,6 +209,7 @@ public final class UserMetrix {
                 // Write the application start time out to the log.
                 logWriter.write("  start: ");
                 logWriter.write(SDF.format(clock.getTime()));
+                startTime = System.currentTimeMillis();
                 logWriter.newLine();
 
                 // Dump meta data stored in the configuration.
@@ -226,8 +233,7 @@ public final class UserMetrix {
         try {
             if (logWriter != null) {
                 // Write the application end time out to the log.
-                logWriter.write("end: ");
-                logWriter.write(SDF.format(clock.getTime()));
+                logWriter.write("duration: " + (System.currentTimeMillis() - this.startTime));
                 logWriter.newLine();
                 logWriter.close();
                 sendLog();
@@ -240,17 +246,20 @@ public final class UserMetrix {
     private void sendLog() {
         try {
             // Send data
-            URL url = new URL("http://localhost:3000/project/log");
+            URL url = new URL("http://usermetrix.com/projects/1/log");
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
 
+            // Write the header of the multipart HTTP POST request.
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
             wr.writeBytes(TWO_HYPHENS + BOUNDARY + LINE_END);
             wr.writeBytes("Content-Disposition: form-data; name=\"upload\";"
                     + " filename=\"" + "usermetrix.log" +"\"" + LINE_END);
             wr.writeBytes(LINE_END);
 
+
+            // Read the log and append it as an attachment to the POST request.
             FileInputStream fileInputStream = new FileInputStream(new File("usermetrix.log"));
             int bytesAvailable = fileInputStream.available();
             int bufferSize = Math.min(bytesAvailable, BUFFER_SIZE);
@@ -263,16 +272,18 @@ public final class UserMetrix {
                 bytesRead = fileInputStream.read(buffer, 0, bufferSize);
             }
 
+            // Write the footer of the multipart HTTP POST request.
             wr.writeBytes(LINE_END);
             wr.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + LINE_END);
             wr.flush();
 
-            // Get the response
+            // Get the response from the server.
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line; while ((line = rd.readLine()) != null) {
                 System.err.println(line);
             }
 
+            // Close all our streams.
             fileInputStream.close();
             wr.close();
             rd.close();

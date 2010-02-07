@@ -29,7 +29,7 @@ public final class UserMetrixTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Configuration c = new Configuration();
-        c.addMetaData("build", "v1.02b");
+        //c.addMetaData("build", "v1.02b");
         UserMetrix.initalise(c);
         um = UserMetrix.getInstance(UserMetrixTest.class);
     }
@@ -48,15 +48,16 @@ public final class UserMetrixTest extends TestCase {
     /**
      * Test of error method, of class UserMetrix.
      */
-    public void testError2args() {
+    public void testError2args() throws Exception {
         um.error("Test Message");
+        Thread.sleep(200);
     }
 
     /**
      * Test of error method, of class UserMetrix.
-     */
+     *//*
     public void testError3args() {
         um.error("Test Message 2", null);
-    }
+    }*/
 
 }
