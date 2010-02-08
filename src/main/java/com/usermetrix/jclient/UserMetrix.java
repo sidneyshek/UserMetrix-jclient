@@ -69,12 +69,18 @@ public final class UserMetrix {
     /** The UUID for this client. */
     private String clientID;
 
+    /** The configuration for this UserMetrix client. */
     private Configuration config;
 
     /** Start time in milliseconds. */
     private long startTime;
 
-    /** Private constructor. */
+    /**
+     * Private constructor.
+     *
+     * @param configuration The configuration class to use for this UserMetrix
+     * client.
+     */
     private UserMetrix(final Configuration configuration) {
         logSource = null;
         logWriter = null;
@@ -85,6 +91,9 @@ public final class UserMetrix {
 
     /**
      * Initalise the UserMetrix log - call this when you start your application.
+     *
+     * @param configuration The configuration client to use for this UserMetrix
+     * client.
      */
     public static void initalise(final Configuration configuration) {
         try {
@@ -246,7 +255,7 @@ public final class UserMetrix {
     private void sendLog() {
         try {
             // Send data
-            URL url = new URL("http://usermetrix.com/projects/1/log");
+            URL url = new URL("http://usermetrix.com/projects/" + config.getProjectID() + "/log");
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);

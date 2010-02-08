@@ -28,7 +28,7 @@ public final class UserMetrixTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Configuration c = new Configuration();
+        Configuration c = new Configuration(1);
         //c.addMetaData("build", "v1.02b");
         UserMetrix.initalise(c);
         um = UserMetrix.getInstance(UserMetrixTest.class);
@@ -49,6 +49,7 @@ public final class UserMetrixTest extends TestCase {
      * Test of error method, of class UserMetrix.
      */
     public void testError2args() throws Exception {
+        Thread.sleep(20);
         um.error("Test Message");
         Thread.sleep(200);
     }
