@@ -29,6 +29,7 @@ public final class UserMetrixTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Configuration c = new Configuration(1);
+        //c.setTmpDirectory("/Users/cfreeman/Library/Application Support/OpenSHAPA/");
         //c.addMetaData("build", "v1.02b");
         UserMetrix.initalise(c);
         um = UserMetrix.getInstance(UserMetrixTest.class);

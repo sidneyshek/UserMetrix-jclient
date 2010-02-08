@@ -101,11 +101,12 @@ public final class UserMetrix {
                 instance = new UserMetrix(configuration);
 
                 // Determine UUID for this client.
-                File idFile = new File("usermetrix.id");
+                File idFile = new File(configuration.getTmpDirectory() + "usermetrix.id");
 
                 // ID file exists on disk - read UUID from file.
                 if (idFile.exists()) {
-                    FileReader idStream = new FileReader("usermetrix.id");
+                    FileReader idStream = new FileReader(configuration.getTmpDirectory()
+                                                         + "usermetrix.id");
                     BufferedReader idReader = new BufferedReader(idStream);
                     instance.setUniqueID(idReader.readLine());
                     idReader.close();
@@ -116,7 +117,8 @@ public final class UserMetrix {
                     UUID u = UUID.randomUUID();
                     instance.setUniqueID(u.toString());
 
-                    FileWriter idStream = new FileWriter("usermetrix.id");
+                    FileWriter idStream = new FileWriter(configuration.getTmpDirectory()
+                                                         + "usermetrix.id");
                     BufferedWriter idWriter = new BufferedWriter(idStream);
                     idWriter.write(u.toString());
                     idWriter.newLine();
@@ -124,7 +126,8 @@ public final class UserMetrix {
                     idStream.close();
                 }
 
-                instance.setLogDestination("usermetrix.log");
+                instance.setLogDestination(configuration.getTmpDirectory()
+                                           + "usermetrix.log");
                 instance.startLog();
             }
 
@@ -269,7 +272,7 @@ public final class UserMetrix {
 
 
             // Read the log and append it as an attachment to the POST request.
-            FileInputStream fileInputStream = new FileInputStream(new File("usermetrix.log"));
+            FileInputStream fileInputStream = new FileInputStream(new File(config.getTmpDirectory() + "usermetrix.log"));
             int bytesAvailable = fileInputStream.available();
             int bufferSize = Math.min(bytesAvailable, BUFFER_SIZE);
             byte[] buffer = new byte[bufferSize];
