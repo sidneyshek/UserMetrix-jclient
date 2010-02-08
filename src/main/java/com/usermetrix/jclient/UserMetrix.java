@@ -258,7 +258,7 @@ public final class UserMetrix {
     private void sendLog() {
         try {
             // Send data
-            URL url = new URL("http://usermetrix.com/projects/" + config.getProjectID() + "/log");
+            URL url = new URL("http://localhost:3000/projects/" + config.getProjectID() + "/log");
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
@@ -272,7 +272,8 @@ public final class UserMetrix {
 
 
             // Read the log and append it as an attachment to the POST request.
-            FileInputStream fileInputStream = new FileInputStream(new File(config.getTmpDirectory() + "usermetrix.log"));
+            FileInputStream fileInputStream = new FileInputStream(new File(config.getTmpDirectory()
+                                                                           + "usermetrix.log"));
             int bytesAvailable = fileInputStream.available();
             int bufferSize = Math.min(bytesAvailable, BUFFER_SIZE);
             byte[] buffer = new byte[bufferSize];
