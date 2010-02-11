@@ -26,7 +26,7 @@ import java.util.UUID;
  *   os: <tag>
  *   start: <time&date>
  * meta:
- *   - [<key>, <value>]
+ *   - <key>: <value>
  * log:
  *   - type: <enum>
  *     time: <milliseconds>
@@ -228,7 +228,7 @@ public final class UserMetrix {
                 logWriter.write("meta:");
                 logWriter.newLine();
                 for (Map.Entry<String, String> e : config.getMetaData()) {
-                    logWriter.write("  - [" + e.getKey() + ", " + e.getValue() + "]");
+                    logWriter.write("  - " + e.getKey() + ": " + e.getValue());
                     logWriter.newLine();
                 }
 
@@ -258,7 +258,7 @@ public final class UserMetrix {
     private void sendLog() {
         try {
             // Send data
-            URL url = new URL("http://localhost:3000/projects/" + config.getProjectID() + "/log");
+            URL url = new URL("http://usermetrix.com/projects/" + config.getProjectID() + "/log");
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
