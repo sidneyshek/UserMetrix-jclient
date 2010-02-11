@@ -249,7 +249,10 @@ public final class UserMetrix {
                 logWriter.write("duration: " + (System.currentTimeMillis() - this.startTime));
                 logWriter.newLine();
                 logWriter.close();
-                sendLog();
+
+                if (config.getProjectID() != 0) {
+                    sendLog();
+                }
             }
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to close file." + e.toString());

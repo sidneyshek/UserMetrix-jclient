@@ -16,8 +16,8 @@ public final class Configuration {
     /** The directory to store log files temporarily - including id files. */
     private String tmpDirectory = "";
 
-    /** The id of the project on the user metrix server. */
-    private int projectID;
+    /** The id of the project on the UserMetrix server. */
+    private int projectID = 0;
 
     /**
      * Private default constructor.
