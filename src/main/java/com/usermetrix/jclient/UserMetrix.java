@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
@@ -300,8 +301,10 @@ public final class UserMetrix {
             fileInputStream.close();
             wr.close();
             rd.close();
+        } catch (UnknownHostException e) {
+            // Silently ignore unknown host exception - can't connect to the internet.
         } catch (Exception e) {
-            System.err.println("Unable to send log" + e);
+            System.err.println("Unable to send log - " + e);
         }
     }
 
