@@ -76,6 +76,9 @@ public final class UserMetrix {
     /** Start time in milliseconds. */
     private long startTime;
 
+    /** Are we permitted to send logs to the server - this defaults to true. */
+    private boolean canSendLogs;
+
     /**
      * Private constructor.
      *
@@ -88,6 +91,17 @@ public final class UserMetrix {
 
         config = configuration;
         clock = Calendar.getInstance();
+        canSendLogs = true;
+    }
+
+    /**
+     * Are we permitted to send usage logs to the UserMetrix server?
+     *
+     * @param canSend True if we are able to send logs to the UserMetrix server
+     * false otherwise.
+     */
+    public static void setCanSendLogs(final boolean canSend) {
+        instance.canSendLogs = canSend;
     }
 
     /**
@@ -100,6 +114,12 @@ public final class UserMetrix {
         try {
             if (instance == null) {
                 instance = new UserMetrix(configuration);
+
+                // Check if the temp directory exists - if not, create it.
+                File tmpDirectory = new File(configuration.getTmpDirectory());
+                if (!tmpDirectory.exists()) {
+                    tmpDirectory.mkdirs();
+                }
 
                 // Determine UUID for this client.
                 File idFile = new File(configuration.getTmpDirectory() + "usermetrix.id");
@@ -260,6 +280,11 @@ public final class UserMetrix {
     }
 
     private void sendLog() {
+        if (!canSendLogs) {
+            // Not permitted to send logs - leave method.
+            return;
+        }
+
         try {
             // Send data
             URL url = new URL("http://usermetrix.com/projects/" + config.getProjectID() + "/log");
