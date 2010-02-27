@@ -28,7 +28,7 @@ public final class UserMetrixTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Configuration c = new Configuration(1);
+        Configuration c = new Configuration(0);
         //c.setTmpDirectory("/Users/cfreeman/Library/Application Support/OpenSHAPA/");
         c.addMetaData("build", "v1.02b");
         UserMetrix.initalise(c);
@@ -49,17 +49,17 @@ public final class UserMetrixTest extends TestCase {
     /**
      * Test of error method, of class UserMetrix.
      */
-    public void testError2args() throws Exception {
-        Thread.sleep(20);
-        um.error("Test Message");
-        Thread.sleep(200);
+    public void testError() throws Exception {
+        try {
+            myMethod();
+        } catch (Exception e) {
+            um.error("Test Message", e);
+            um.error(e);
+            um.error("Just a message");
+        }
     }
 
-    /**
-     * Test of error method, of class UserMetrix.
-     *//*
-    public void testError3args() {
-        um.error("Test Message 2", null);
-    }*/
-
+    private void myMethod() throws Exception {
+        throw new Exception("blah");
+    }
 }

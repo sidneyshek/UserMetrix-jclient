@@ -33,6 +33,10 @@ import java.util.UUID;
  *     time: <milliseconds>
  *     source: <source class>
  *     message: <msg>
+ *     stack:
+ *       - class: <source class>
+ *         line: <line number>
+ *         method: <method>
  * duration: <milliseconds>
  */
 public final class UserMetrix {
@@ -208,15 +212,48 @@ public final class UserMetrix {
     }
 
     /**
-     * Appened an error message to your log.
+     * Append an error message to your log.
      *
      * @param message What cause this error within your application.
      * @param exception The exception that caused this error.
      */
     public void error(final String message, final Throwable exception) {
-        // ToDo: Build call stack message.
-
         this.error(message);
+        this.logStack(exception);
+    }
+
+    /**
+     * Append an error message to your log.
+     *
+     * @param exception The exception that caused this error.
+     */
+    public void error(final Throwable exception) {
+        this.error("null");
+        this.logStack(exception);
+    }
+
+    /**
+     * Writes the stack trace of an exception to your log.
+     *
+     * @param exception The exception to write to the log.
+     */
+    private void logStack(final Throwable exception) {
+        try {
+            if (logWriter != null) {
+                logWriter.write("    stack:");
+                logWriter.newLine();
+                for (StackTraceElement e : exception.getStackTrace()) {
+                    logWriter.write("      - class: " + e.getClassName());
+                    logWriter.newLine();
+                    logWriter.write("        line: " + e.getLineNumber());
+                    logWriter.newLine();
+                    logWriter.write("        method: " + e.getMethodName());
+                    logWriter.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("UserMetrix: Unable to write to file." + e.toString());
+        }
     }
 
     private void startLog() {
