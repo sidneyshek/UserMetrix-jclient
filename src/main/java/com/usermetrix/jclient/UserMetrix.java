@@ -190,6 +190,28 @@ public final class UserMetrix {
     }
 
     /**
+     * Append a usage tag to your log.
+     *
+     * @param tag The unique tag to use for this particular type of software usage.
+     */
+    public void usage(final String tag) {
+        try {
+            if (logWriter != null) {
+                logWriter.write("  - type: usage");
+                logWriter.newLine();
+                logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
+                logWriter.newLine();
+                logWriter.write("    source: " + logSource);
+                logWriter.newLine();
+                logWriter.write("    message: " + tag);
+                logWriter.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("UserMetrix: Unable to write to file." + e.toString());
+        }
+    }
+
+    /**
      * Append an error message to your log.
      *
      * @param message What caused this error within your application.

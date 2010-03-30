@@ -28,9 +28,9 @@ public final class UserMetrixTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Configuration c = new Configuration(0);
+        Configuration c = new Configuration(1);
         //c.setTmpDirectory("/Users/cfreeman/Library/Application Support/OpenSHAPA/");
-        c.addMetaData("build", "v1.02b");
+        //c.addMetaData("build", "v1.02c");
         UserMetrix.initalise(c);
         um = UserMetrix.getInstance(UserMetrixTest.class);
     }
@@ -59,7 +59,26 @@ public final class UserMetrixTest extends TestCase {
         }
     }
 
+    public void testEmpty() throws Exception {
+
+    }
+
+    public void testUsage() throws Exception {
+        try {
+            um.usage("testUsage");
+            otherMethod();
+            myMethod();
+        } catch (Exception e) {
+            um.error("Test Exception", e);
+        }
+
+    }
+
     private void myMethod() throws Exception {
         throw new Exception("blah");
+    }
+
+    private void otherMethod() throws Exception {
+        um.usage("otherMethod");
     }
 }
