@@ -50,18 +50,19 @@ public final class UserMetrix {
     /** The format to use when generating timestamps. */
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
+    /** The line ending to use when sending log files. */
     private static final String LINE_END = "\r\n";
 
+    /** Definition of two hyphens to dump when sending log files. */
     private static final String TWO_HYPHENS = "--";
 
+    /** Definition the boundary to use when sending log files. */
     private static final String BOUNDARY =  "*****";
 
-    private static int BUFFER_SIZE = 1048576;
+    /** The size of the buffer to use when sending log files. */
+    private static final int BUFFER_SIZE = 1048576;
 
     /* Members of UserMetrix.  -----------------------------------------------*/
-    /** The current source for log messages. */
-    private Class logSource;
-
     /** The destination stream for the tmp usermetrix log. */
     private FileWriter logStream;
 
@@ -90,7 +91,6 @@ public final class UserMetrix {
      * client.
      */
     private UserMetrix(final Configuration configuration) {
-        logSource = null;
         logWriter = null;
 
         config = configuration;
@@ -163,18 +163,18 @@ public final class UserMetrix {
     }
 
     /**
-     * Gets the instance of the UserMetrix logging tool for the supplied source.
+     * Creates a logger that can be used to log messages.
      *
      * @param logSource The source of the logging message (usually a class).
      * @return The instance of the UserMetrix class for the supplied message
      * source.
      */
-    public static UserMetrix getInstance(final Class logSource) {
+    public static Logger getLogger(final Class logSource) {
         if (instance != null) {
-            instance.setLogSource(logSource);
+            return new Logger(logSource, instance);
         }
 
-        return instance;
+        return null;
     }
 
     /**
@@ -193,15 +193,16 @@ public final class UserMetrix {
      * Append a usage tag to your log.
      *
      * @param tag The unique tag to use for this particular type of software usage.
+     * @param source The source of the log message.
      */
-    public void usage(final String tag) {
+    public void usage(final String tag, final Class source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: usage");
                 logWriter.newLine();
                 logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
                 logWriter.newLine();
-                logWriter.write("    source: " + logSource);
+                logWriter.write("    source: " + source);
                 logWriter.newLine();
                 logWriter.write("    message: " + tag);
                 logWriter.newLine();
@@ -215,15 +216,16 @@ public final class UserMetrix {
      * Append an error message to your log.
      *
      * @param message What caused this error within your application.
+     * @param source The source of the log message.
      */
-    public void error(final String message) {
+    public void error(final String message, final Class source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: error");
                 logWriter.newLine();
                 logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
                 logWriter.newLine();
-                logWriter.write("    source: " + logSource);
+                logWriter.write("    source: " + source);
                 logWriter.newLine();
                 logWriter.write("    message: " + message);
                 logWriter.newLine();
@@ -238,9 +240,10 @@ public final class UserMetrix {
      *
      * @param message What cause this error within your application.
      * @param exception The exception that caused this error.
+     * @param source The source of the log message.
      */
-    public void error(final String message, final Throwable exception) {
-        this.error(message);
+    public void error(final String message, final Throwable exception, final Class source) {
+        this.error(message, source);
         this.logStack(exception);
     }
 
@@ -248,9 +251,10 @@ public final class UserMetrix {
      * Append an error message to your log.
      *
      * @param exception The exception that caused this error.
+     * @param source The source of the log message
      */
-    public void error(final Throwable exception) {
-        this.error("null");
+    public void error(final Throwable exception, final Class source) {
+        this.error("null", source);
         this.logStack(exception);
     }
 
@@ -393,10 +397,6 @@ public final class UserMetrix {
         } catch (Exception e) {
             System.err.println("Unable to send log - " + e);
         }
-    }
-
-    private void setLogSource(final Class s) {
-        logSource = s;
     }
 
     private void setLogDestination(final String logFile) {

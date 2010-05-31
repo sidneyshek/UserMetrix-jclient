@@ -4,12 +4,11 @@ import junit.framework.TestCase;
 
 /**
  *
- * @author cfreeman
  */
 public final class UserMetrixTest extends TestCase {
 
     /** The instance of UserMetrix we are testing. */
-    private UserMetrix um;
+    private Logger um;
 
     /**
      * Constructor.
@@ -32,7 +31,7 @@ public final class UserMetrixTest extends TestCase {
         //c.setTmpDirectory("/Users/cfreeman/Library/Application Support/OpenSHAPA/");
         //c.addMetaData("build", "v1.02c");
         UserMetrix.initalise(c);
-        um = UserMetrix.getInstance(UserMetrixTest.class);
+        um = UserMetrix.getLogger(UserMetrixTest.class);
     }
 
     /**
