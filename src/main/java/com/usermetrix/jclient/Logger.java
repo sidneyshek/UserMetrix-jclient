@@ -3,7 +3,7 @@ package com.usermetrix.jclient;
 /**
  * Class for logging messages to the central UserMetrix server.
  */
-public class Logger {
+public final class Logger {
     /** The source class for messages from this logger. */
     private Class logSource;
 
