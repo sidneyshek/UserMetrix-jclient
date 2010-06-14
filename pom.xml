@@ -26,8 +26,8 @@
     <distributionManagement>
     <repository>
       <id>repo</id>
-      <name>uispec4j</name>
-      <url>scp://usermetrix.com/var/www/maven2</url>
+      <name>usermetrix</name>
+      <url>scp://usermetr@usermetrix.com/home/usermetr/maven2</url>
     </repository>
   </distributionManagement>
 
