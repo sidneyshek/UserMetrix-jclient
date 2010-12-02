@@ -218,6 +218,24 @@ public final class UserMetrix {
     }
 
     /**
+     * Append a frustration tag to your log.
+     *
+     * @param tag The tag (perhaps user specified) for this frustration.
+     * @param source The source of the frustration (this is not mega-relevant, frustrations
+     * are global to their origin).
+     */
+    public void frustration(final String tag, final Class source) {
+        try {
+            if (logWriter != null) {
+                logWriter.write("  - type: frustration");
+                writeMessageDetails(tag, source);
+            }
+        } catch (IOException e) {
+            System.err.println("UserMetrix: Unable to write to file." + e.toString());
+        }
+    }
+
+    /**
      * Append an error message to your log.
      *
      * @param message What caused this error within your application.
