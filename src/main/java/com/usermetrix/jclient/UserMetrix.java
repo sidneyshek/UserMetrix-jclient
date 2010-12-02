@@ -189,6 +189,12 @@ public final class UserMetrix {
         }
     }
 
+    /**
+     * Append a view tag to your log.
+     *
+     * @param tag The unique tag describing the view that the user invoked.
+     * @param source The source of the log message.
+     */
     public void view(final String tag, final Class source) {
         try {
             if (logWriter != null) {
