@@ -66,6 +66,9 @@ public final class UserMetrixTest extends TestCase {
 
     public void testUsage() throws Exception {
         try {
+            um.event("newEvent");
+            um.view("a new view");
+
             um.usage("testUsage");
             um.usage("testUsage");
             um.usage("testUsage");

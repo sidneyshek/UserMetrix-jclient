@@ -36,7 +36,7 @@ public final class Logger {
      * @see view(final String tag)
      */
     public void usage(final String tag) {
-        manager.view(tag, logSource);
+        manager.event(tag, logSource);
     }
 
     /**
