@@ -1,4 +1,4 @@
-package com.usermetrix.jclient;
+    package com.usermetrix.jclient;
 
 import junit.framework.TestCase;
 
@@ -29,7 +29,8 @@ public final class UserMetrixTest extends TestCase {
         super.setUp();
         Configuration c = new Configuration(1);
         //c.setTmpDirectory("/Users/cfreeman/Library/Application Support/OpenSHAPA/");
-        //c.addMetaData("build", "v1.02c");
+        c.addMetaData("build", "v1.02c");
+        c.addMetaData("moo", "foo");
         UserMetrix.initalise(c);
         um = UserMetrix.getLogger(UserMetrixTest.class);
     }
@@ -58,12 +59,72 @@ public final class UserMetrixTest extends TestCase {
         }
     }
 
-    public void testEmpty() throws Exception {
 
-    }
+//    public void testEmpty() throws Exception {
+//
+//    }
 
     public void testUsage() throws Exception {
         try {
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
+            um.usage("testUsage");
             um.usage("testUsage");
             otherMethod();
             myMethod();

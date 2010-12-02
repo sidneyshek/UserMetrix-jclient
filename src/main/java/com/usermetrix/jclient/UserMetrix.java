@@ -189,23 +189,28 @@ public final class UserMetrix {
         }
     }
 
+    public void view(final String tag, final Class source) {
+        try {
+            if (logWriter != null) {
+                logWriter.write("  - type: view");
+                writeMessageDetails(tag, source);
+            }
+        } catch (IOException e) {
+            System.err.println("UserMetrix: Unable to write to file." + e.toString());
+        }
+    }
+
     /**
      * Append a usage tag to your log.
      *
      * @param tag The unique tag to use for this particular type of software usage.
      * @param source The source of the log message.
      */
-    public void usage(final String tag, final Class source) {
+    public void event(final String tag, final Class source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: usage");
-                logWriter.newLine();
-                logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
-                logWriter.newLine();
-                logWriter.write("    source: " + source);
-                logWriter.newLine();
-                logWriter.write("    message: " + tag);
-                logWriter.newLine();
+                writeMessageDetails(tag, source);
             }
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to write to file." + e.toString());
@@ -222,16 +227,31 @@ public final class UserMetrix {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: error");
-                logWriter.newLine();
-                logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
-                logWriter.newLine();
-                logWriter.write("    source: " + source);
-                logWriter.newLine();
-                logWriter.write("    message: " + message);
-                logWriter.newLine();
+                writeMessageDetails(message, source);
             }
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to write to file." + e.toString());
+        }
+    }
+
+    /**
+     * Dumps additional message details to disk.
+     *
+     * @param message The message that is being reported.
+     * @param source The source of the log message.
+     *
+     * @throws IOException If unable to write the details to the log.
+     */
+    private void writeMessageDetails(final String message,
+                                     final Class source) throws IOException {
+        if (logWriter != null) {
+            logWriter.newLine();
+            logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
+            logWriter.newLine();
+            logWriter.write("    source: " + source);
+            logWriter.newLine();
+            logWriter.write("    message: " + message);
+            logWriter.newLine();
         }
     }
 

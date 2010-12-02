@@ -25,10 +25,28 @@ public final class Logger {
     /**
      * Log usage pattern.
      *
-     * @param tag Unique tag for usage pattern.
+     * @param tag Unique tag for the triggering of a specific event.
+     */
+    public void event(final String tag) {
+        manager.event(tag, logSource);
+    }
+
+    /**
+     * @deprecated Please now use view()
+     * @see view(final String tag)
      */
     public void usage(final String tag) {
-        manager.usage(tag, logSource);
+        manager.view(tag, logSource);
+    }
+
+    /**
+     * Log the presentation of a view.
+     *
+     *
+     * @param tag Unique tag for the presentation of a particular view.
+     */
+    public void view(final String tag) {
+        manager.view(tag, logSource);
     }
 
     /**
