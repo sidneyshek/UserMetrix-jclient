@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.usermetrix</groupId>
   <artifactId>UserMetrix-jclient</artifactId>  
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <packaging>jar</packaging>
   <name>UserMetrix-jclient</name>
   <url>http://usermetrix.com</url>
