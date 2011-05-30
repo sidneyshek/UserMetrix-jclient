@@ -1,0 +1,12 @@
+---
+v: 1
+system:
+  id: f0aced29-ada1-47a6-9ea0-22da138374c4
+  os: Mac OS X - 10.6.7
+  start: 2011-05-30T10:35:26.030+1000
+meta:
+log:
+  - type: usage
+    time: 1
+    source: class com.usermetrix.jclient.UserMetrixTest
+    message: myEvent

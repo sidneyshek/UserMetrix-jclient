@@ -5,7 +5,7 @@ package com.usermetrix.jclient;
  */
 public final class Logger {
     /** The source class for messages from this logger. */
-    private Class logSource;
+    private Class<?> logSource;
 
     /** The UserMetrix manager responsible for dispatching messages. */
     private UserMetrix manager;
@@ -17,7 +17,7 @@ public final class Logger {
      * @param source The source of messages originating from this logger.
      * @param logManager The manager Responsible for dispatching messages.
      */
-    public Logger(final Class source, final UserMetrix logManager) {
+    public Logger(final Class<?> source, final UserMetrix logManager) {
         logSource = source;
         manager = logManager;
     }
@@ -32,8 +32,8 @@ public final class Logger {
     }
 
     /**
-     * @deprecated Please now use view()
-     * @see view(final String tag)
+     * @deprecated Please now use event()
+     * @see event(final String tag)
      */
     public void usage(final String tag) {
         manager.event(tag, logSource);
@@ -41,7 +41,6 @@ public final class Logger {
 
     /**
      * Log the presentation of a view.
-     *
      *
      * @param tag Unique tag for the presentation of a particular view.
      */

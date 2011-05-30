@@ -68,6 +68,9 @@ public final class UserMetrix {
 
     /** The destination tmp file for the UserMetrix log. */
     private BufferedWriter logWriter;
+    
+    /** The destination tmp file for the UserMetrix log. */
+    private File logFile;
 
     /** The clock that we fetch the time from. */
     private Calendar clock;
@@ -92,7 +95,7 @@ public final class UserMetrix {
      */
     private UserMetrix(final Configuration configuration) {
         logWriter = null;
-
+        logFile = null;
         config = configuration;
         clock = Calendar.getInstance();
         canSendLogs = true;
@@ -151,8 +154,9 @@ public final class UserMetrix {
                     idStream.close();
                 }
 
-                instance.setLogDestination(configuration.getTmpDirectory()
-                                           + "usermetrix.log");
+                
+                instance.setLogDestination(new File(configuration.getTmpDirectory()
+                                           + "usermetrix.log"));
                 instance.startLog();
             }
 
@@ -169,7 +173,7 @@ public final class UserMetrix {
      * @return The instance of the UserMetrix class for the supplied message
      * source.
      */
-    public static Logger getLogger(final Class logSource) {
+    public static Logger getLogger(final Class<?> logSource) {
         if (instance != null) {
             return new Logger(logSource, instance);
         }
@@ -195,7 +199,7 @@ public final class UserMetrix {
      * @param tag The unique tag describing the view that the user invoked.
      * @param source The source of the log message.
      */
-    public void view(final String tag, final Class source) {
+    public void view(final String tag, final Class<?> source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: view");
@@ -212,7 +216,7 @@ public final class UserMetrix {
      * @param tag The unique tag to use for this particular type of software usage.
      * @param source The source of the log message.
      */
-    public void event(final String tag, final Class source) {
+    public void event(final String tag, final Class<?> source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: usage");
@@ -230,7 +234,7 @@ public final class UserMetrix {
      * @param source The source of the frustration (this is not mega-relevant, frustrations
      * are global to their origin).
      */
-    public void frustration(final String tag, final Class source) {
+    public void frustration(final String tag, final Class<?> source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: frustration");
@@ -247,7 +251,7 @@ public final class UserMetrix {
      * @param message What caused this error within your application.
      * @param source The source of the log message.
      */
-    public void error(final String message, final Class source) {
+    public void error(final String message, final Class<?> source) {
         try {
             if (logWriter != null) {
                 logWriter.write("  - type: error");
@@ -267,7 +271,7 @@ public final class UserMetrix {
      * @throws IOException If unable to write the details to the log.
      */
     private void writeMessageDetails(final String message,
-                                     final Class source) throws IOException {
+                                     final Class<?> source) throws IOException {
         if (logWriter != null) {
             logWriter.newLine();
             logWriter.write("    time: " + (System.currentTimeMillis() - this.startTime));
@@ -276,6 +280,7 @@ public final class UserMetrix {
             logWriter.newLine();
             logWriter.write("    message: " + message);
             logWriter.newLine();
+            logWriter.flush();
         }
     }
 
@@ -286,7 +291,9 @@ public final class UserMetrix {
      * @param exception The exception that caused this error.
      * @param source The source of the log message.
      */
-    public void error(final String message, final Throwable exception, final Class source) {
+    public void error(final String message,
+                      final Throwable exception,
+                      final Class<?> source) {
         this.error(message, source);
         this.logStack(exception);
     }
@@ -297,7 +304,7 @@ public final class UserMetrix {
      * @param exception The exception that caused this error.
      * @param source The source of the log message
      */
-    public void error(final Throwable exception, final Class source) {
+    public void error(final Throwable exception, final Class<?> source) {
         this.error("null", source);
         this.logStack(exception);
     }
@@ -363,6 +370,7 @@ public final class UserMetrix {
                 // Begin the log.
                 logWriter.write("log:");
                 logWriter.newLine();
+                logWriter.flush();
             }
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to write file." + e.toString());
@@ -386,9 +394,16 @@ public final class UserMetrix {
         }
     }
 
+    private void cleanLogFromDisk() {
+        if (!logFile.delete()) {
+            System.err.println("UserMetrix: Unable to clean log from disk.");
+        }
+    }
+
     private void sendLog() {
         if (!canSendLogs) {
             // Not permitted to send logs - leave method.
+            cleanLogFromDisk();
             return;
         }
 
@@ -436,16 +451,27 @@ public final class UserMetrix {
             fileInputStream.close();
             wr.close();
             rd.close();
+            
+            // Delete the log file when successfully.
+            cleanLogFromDisk();
         } catch (UnknownHostException e) {
             // Silently ignore unknown host exception - can't connect to the internet.
         } catch (Exception e) {
-            System.err.println("Unable to send log - " + e);
+            System.err.println("UserMetrix: Unable to send log - " + e);
         }
     }
 
-    private void setLogDestination(final String logFile) {
+    private void setLogDestination(final File newLog) {
         try {
-            logStream = new FileWriter(logFile);
+            logFile = newLog;
+            
+            // Check for the existence of a log, ff it exists - send it first.
+            if (logFile.exists()) {
+                sendLog();
+            }
+            
+            // Log should not exist at this point - create a new log.
+            logStream = new FileWriter(logFile);                        
             logWriter = new BufferedWriter(logStream);
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to set log location." + e.toString());

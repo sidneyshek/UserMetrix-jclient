@@ -23,13 +23,6 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-    <repository>
-      <id>repo</id>
-      <name>usermetrix</name>
-      <url>scp://usermetr@usermetrix.com/home/usermetr/maven2</url>
-    </repository>
-  </distributionManagement>
 
   <dependencies>
     <dependency>
