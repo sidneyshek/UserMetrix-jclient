@@ -441,16 +441,9 @@ public final class UserMetrix {
             wr.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + LINE_END);
             wr.flush();
 
-            // Get the response from the server.
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line; while ((line = rd.readLine()) != null) {
-                System.err.println(line);
-            }
-
             // Close all our streams.
             fileInputStream.close();
             wr.close();
-            rd.close();
             
             // Delete the log file when successfully.
             cleanLogFromDisk();
