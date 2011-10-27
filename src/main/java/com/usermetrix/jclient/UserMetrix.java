@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -68,7 +67,7 @@ public final class UserMetrix {
 
     /** The destination tmp file for the UserMetrix log. */
     private BufferedWriter logWriter;
-    
+
     /** The destination tmp file for the UserMetrix log. */
     private File logFile;
 
@@ -154,7 +153,6 @@ public final class UserMetrix {
                     idStream.close();
                 }
 
-                
                 instance.setLogDestination(new File(configuration.getTmpDirectory()
                                            + "usermetrix.log"));
                 instance.startLog();
@@ -444,7 +442,7 @@ public final class UserMetrix {
             // Close all our streams.
             fileInputStream.close();
             wr.close();
-            
+
             // Delete the log file when successfully.
             cleanLogFromDisk();
         } catch (UnknownHostException e) {
@@ -457,14 +455,14 @@ public final class UserMetrix {
     private void setLogDestination(final File newLog) {
         try {
             logFile = newLog;
-            
+
             // Check for the existence of a log, ff it exists - send it first.
             if (logFile.exists()) {
                 sendLog();
             }
-            
+
             // Log should not exist at this point - create a new log.
-            logStream = new FileWriter(logFile);                        
+            logStream = new FileWriter(logFile);
             logWriter = new BufferedWriter(logStream);
         } catch (IOException e) {
             System.err.println("UserMetrix: Unable to set log location." + e.toString());
