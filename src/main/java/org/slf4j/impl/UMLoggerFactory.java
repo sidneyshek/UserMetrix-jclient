@@ -59,10 +59,10 @@ public class UMLoggerFactory implements ILoggerFactory {
             try {
                 result = loggerMap.get(name);
 
-                if (result == null) {                
+                if (result == null) {
                     com.usermetrix.jclient.Logger umLogger = UserMetrix.getLogger(Class.forName(name));
                     result = new UMLoggerAdapter(umLogger);
-                    loggerMap.put(name, result);                    
+                    loggerMap.put(name, result);
                 }
             } catch (ClassNotFoundException e) {
                 System.err.println("Unable to get logger for class: " + name);
