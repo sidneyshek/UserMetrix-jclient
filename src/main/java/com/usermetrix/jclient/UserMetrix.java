@@ -101,9 +101,6 @@ public final class UserMetrix {
     /** Start time in milliseconds. */
     private long startTime;
 
-    /** Are we permitted to send logs to the server - this defaults to true. */
-    private boolean canSendLogs;
-
     /**
      * Private constructor.
      *
@@ -115,7 +112,6 @@ public final class UserMetrix {
         logFile = null;
         config = configuration;
         clock = Calendar.getInstance();
-        canSendLogs = true;
     }
 
     /**
@@ -125,7 +121,21 @@ public final class UserMetrix {
      * false otherwise.
      */
     public static void setCanSendLogs(final boolean canSend) {
-        instance.canSendLogs = canSend;
+        instance.config.setCanSendLogs(canSend);
+    }
+
+    /**
+     * Initalise the UserMetrix log from a configuration file (UserMetrix.yml)
+     * that resides within your classpath.
+     *
+     * @throws Exception If unable to find a valid UserMetrix.yml file to use
+     * when configuring UserMetrix.
+     */
+    public static void initalise() throws Exception {
+        // No configuration supplied, attempt to initalise UserMetrix, search
+        // the classpath for a file called UserMetrix.yml and configure from
+        // that.
+        UserMetrix.initalise(new Configuration());
     }
 
     /**
@@ -417,7 +427,7 @@ public final class UserMetrix {
     }
 
     private void sendLog() {
-        if (!canSendLogs) {
+        if (!config.canSendLogs()) {
             // Not permitted to send logs - leave method.
             cleanLogFromDisk();
             return;

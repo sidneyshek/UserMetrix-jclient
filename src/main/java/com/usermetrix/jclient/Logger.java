@@ -68,7 +68,8 @@ public final class Logger {
     /**
      * Record that the user has been frustrated by your application.
      *
-     * @param message The message that the user has given for frustration.
+     * @param message The optional message supplied by the user about their
+     * frustrating experience.
      */
     public void frustration(final String message) {
         manager.frustration(message, logSource);
