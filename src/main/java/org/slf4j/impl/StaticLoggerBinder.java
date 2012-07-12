@@ -25,7 +25,9 @@
  */
 package org.slf4j.impl;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
 /**
@@ -54,6 +56,14 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
      */
     private StaticLoggerBinder() {
         loggerFactory = new UMLoggerFactory();
+
+        // Initialise UserMetrix so that we are all good to start collecting data
+        // when developers fetch loggers from the Factory.
+        try {
+            UserMetrix.initalise();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
