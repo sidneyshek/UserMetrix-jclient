@@ -57,14 +57,6 @@ public final class Logger {
     }
 
     /**
-     * @deprecated Please now use event()
-     * @see event(final String tag)
-     */
-    public void usage(final String tag) {
-        manager.event(tag, logSource);
-    }
-
-    /**
      * Log the presentation of a view.
      *
      * @param tag Unique tag for the presentation of a particular view.
