@@ -30,7 +30,9 @@ import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
- *
+ * This adapter maps SLF4J calls to the underlying UserMetrix logger, it also
+ * provides a helper method for you to fetch the native UserMetrix logger
+ * itself.
  */
 public class UMLoggerAdapter extends MarkerIgnoringBase {
 
@@ -41,6 +43,9 @@ public class UMLoggerAdapter extends MarkerIgnoringBase {
         this.logger = logger;
     }
 
+    /**
+     * @return The native UserMetrix logger that this adapter wraps around.
+     */
     com.usermetrix.jclient.Logger getUMLogger() {
         return logger;
     }
@@ -50,98 +55,107 @@ public class UMLoggerAdapter extends MarkerIgnoringBase {
     }
 
     public void trace(String msg) {
-        this.logger.view(msg);
+        this.logger.event(msg);
     }
 
     public void trace(String format, Object arg1) {
         FormattingTuple ft = MessageFormatter.format(format, arg1);
-        this.logger.view(ft.getMessage());
+        this.logger.event(ft.getMessage());
     }
 
     public void trace(String format, Object arg1, Object arg2) {
         FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
-        this.logger.view(ft.getMessage());
+        this.logger.event(ft.getMessage());
     }
 
     public void trace(String format, Object[] argArray) {
         FormattingTuple ft = MessageFormatter.format(format, argArray);
-        this.logger.view(ft.getMessage());
+        this.logger.event(ft.getMessage());
     }
 
     public void trace(String msg, Throwable t) {
-        this.logger.view(msg);
+        this.logger.event(msg);
     }
 
     public boolean isDebugEnabled() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
 
-    public void debug(String string) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void debug(String msg) {
+        this.logger.event(msg);
     }
 
-    public void debug(String string, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void debug(String format, Object arg1) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1);
+        this.logger.event(ft.getMessage());
     }
 
-    public void debug(String string, Object o, Object o1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void debug(String format, Object arg1, Object arg2) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
+        this.logger.event(ft.getMessage());
     }
 
-    public void debug(String string, Object[] os) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void debug(String format, Object[] argArray) {
+        FormattingTuple ft = MessageFormatter.format(format, argArray);
+        this.logger.event(ft.getMessage());
     }
 
-    public void debug(String string, Throwable thrwbl) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void debug(String msg, Throwable t) {
+        this.logger.event(msg);
     }
 
     public boolean isInfoEnabled() {
-        return false;
+        return true;
     }
 
-    public void info(String string) {
-        // info calls are ignored by UserMetrix.
+    public void info(String msg) {
+        this.logger.event(msg);
     }
 
-    public void info(String string, Object o) {
-        // info calls are ignored by UserMetrix.
+    public void info(String format, Object arg1) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1);
+        this.logger.event(ft.getMessage());
     }
 
-    public void info(String string, Object o, Object o1) {
-        // info calls are ignored by UserMetrix.
+    public void info(String format, Object arg1, Object arg2) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
+        this.logger.event(ft.getMessage());
     }
 
-    public void info(String string, Object[] os) {
-        // info calls are ignored by UserMetrix.
+    public void info(String format, Object[] argArray) {
+        FormattingTuple ft = MessageFormatter.format(format, argArray);
+        this.logger.event(ft.getMessage());
     }
 
-    public void info(String string, Throwable thrwbl) {
-        // info calls are ignored by UserMetrix.
+    public void info(String msg, Throwable t) {
+        this.logger.event(msg);
     }
 
     public boolean isWarnEnabled() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
 
-    public void warn(String string) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warn(String msg) {
+        logger.error(msg);
     }
 
-    public void warn(String string, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warn(String format, Object arg1) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1);
+        this.logger.error(ft.getMessage());
     }
 
-    public void warn(String string, Object[] os) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warn(String format, Object arg1, Object arg2) {
+        FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
+        this.logger.error(ft.getMessage());
     }
 
-    public void warn(String string, Object o, Object o1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warn(String format, Object[] argArray) {
+        FormattingTuple ft = MessageFormatter.format(format, argArray);
+        this.logger.error(ft.getMessage());
     }
 
-    public void warn(String string, Throwable thrwbl) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void warn(String msg, Throwable t) {
+        this.logger.error(msg, t);
     }
 
     public boolean isErrorEnabled() {
