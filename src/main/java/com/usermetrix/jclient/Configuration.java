@@ -77,6 +77,8 @@ public final class Configuration {
         if (configContents.get("tmpDirectory") != null) {
             tmpDirectory = (String) configContents.get("tmpDirectory");
         }
+
+        metadata = new HashMap<String, String>();
     }
 
     /**

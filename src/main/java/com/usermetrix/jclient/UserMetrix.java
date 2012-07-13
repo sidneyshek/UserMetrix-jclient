@@ -112,6 +112,13 @@ public final class UserMetrix {
     }
 
     /**
+     * @return The instance of UserMetrix.
+     */
+    public static UserMetrix getInstance() {
+        return instance;
+    }
+
+    /**
      * Are we permitted to send usage logs to the UserMetrix server?
      *
      * @param canSend True if we are able to send logs to the UserMetrix server
