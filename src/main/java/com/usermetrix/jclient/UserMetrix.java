@@ -64,9 +64,6 @@ public final class UserMetrix {
     /** The current version of the log file this client generates. */
     private static final int LOG_VERSION = 1;
 
-    /** The format to use when generating timestamps. */
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
     /** The line ending to use when sending log files. */
     private static final String LINE_END = "\r\n";
 
@@ -381,7 +378,12 @@ public final class UserMetrix {
 
                 // Write the application start time out to the log.
                 logWriter.write("  start: ");
+
+                // Create a new simple date format class each time to avoid any
+                // thread safety issues.
+                SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                 logWriter.write(SDF.format(clock.getTime()));
+
                 startTime = System.currentTimeMillis();
                 logWriter.newLine();
 
