@@ -58,7 +58,7 @@ import java.util.UUID;
  */
 public final class UserMetrix {
 
-    /** The current isntance of the UserMetrix logging tool. */
+    /** The current instance of the UserMetrix logging tool. */
     private static UserMetrix instance = null;
 
     /** The current version of the log file this client generates. */
