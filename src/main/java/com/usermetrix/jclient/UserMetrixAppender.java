@@ -90,8 +90,6 @@ public class UserMetrixAppender extends AppenderBase<ILoggingEvent> {
                                                sourceClass);
                 break;
         }
-
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
