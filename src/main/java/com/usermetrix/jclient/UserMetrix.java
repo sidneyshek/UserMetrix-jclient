@@ -58,14 +58,11 @@ import java.util.UUID;
  */
 public final class UserMetrix {
 
-    /** The current isntance of the UserMetrix logging tool. */
+    /** The current instance of the UserMetrix logging tool. */
     private static UserMetrix instance = null;
 
     /** The current version of the log file this client generates. */
     private static final int LOG_VERSION = 1;
-
-    /** The format to use when generating timestamps. */
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /** The line ending to use when sending log files. */
     private static final String LINE_END = "\r\n";
@@ -101,9 +98,6 @@ public final class UserMetrix {
     /** Start time in milliseconds. */
     private long startTime;
 
-    /** Are we permitted to send logs to the server - this defaults to true. */
-    private boolean canSendLogs;
-
     /**
      * Private constructor.
      *
@@ -115,7 +109,13 @@ public final class UserMetrix {
         logFile = null;
         config = configuration;
         clock = Calendar.getInstance();
-        canSendLogs = true;
+    }
+
+    /**
+     * @return The instance of UserMetrix.
+     */
+    public static UserMetrix getInstance() {
+        return instance;
     }
 
     /**
@@ -125,7 +125,21 @@ public final class UserMetrix {
      * false otherwise.
      */
     public static void setCanSendLogs(final boolean canSend) {
-        instance.canSendLogs = canSend;
+        instance.config.setCanSendLogs(canSend);
+    }
+
+    /**
+     * Initalise the UserMetrix log from a configuration file (UserMetrix.yml)
+     * that resides within your classpath.
+     *
+     * @throws Exception If unable to find a valid UserMetrix.yml file to use
+     * when configuring UserMetrix.
+     */
+    public static void initalise() throws Exception {
+        // No configuration supplied, attempt to initalise UserMetrix, search
+        // the classpath for a file called UserMetrix.yml and configure from
+        // that.
+        UserMetrix.initalise(new Configuration());
     }
 
     /**
@@ -371,7 +385,12 @@ public final class UserMetrix {
 
                 // Write the application start time out to the log.
                 logWriter.write("  start: ");
+
+                // Create a new simple date format class each time to avoid any
+                // thread safety issues.
+                SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                 logWriter.write(SDF.format(clock.getTime()));
+
                 startTime = System.currentTimeMillis();
                 logWriter.newLine();
 
@@ -417,7 +436,7 @@ public final class UserMetrix {
     }
 
     private void sendLog() {
-        if (!canSendLogs) {
+        if (!config.canSendLogs()) {
             // Not permitted to send logs - leave method.
             cleanLogFromDisk();
             return;

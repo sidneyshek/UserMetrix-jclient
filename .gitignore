@@ -2,3 +2,6 @@ target
 usermetrix.log
 usermetrix.id
 .DS_Store
+.classpath
+.project
+.settings

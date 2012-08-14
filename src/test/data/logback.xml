@@ -1,0 +1,10 @@
+<configuration debug="true"> 
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"/>     
+
+  <appender name="UserMetrix" class="com.usermetrix.jclient.UserMetrixAppender" />
+
+  <root level="debug">
+    <appender-ref ref="UserMetrix" />
+  </root>
+</configuration>

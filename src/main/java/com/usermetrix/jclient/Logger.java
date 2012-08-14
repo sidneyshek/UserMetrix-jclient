@@ -57,14 +57,6 @@ public final class Logger {
     }
 
     /**
-     * @deprecated Please now use event()
-     * @see event(final String tag)
-     */
-    public void usage(final String tag) {
-        manager.event(tag, logSource);
-    }
-
-    /**
      * Log the presentation of a view.
      *
      * @param tag Unique tag for the presentation of a particular view.
@@ -76,7 +68,8 @@ public final class Logger {
     /**
      * Record that the user has been frustrated by your application.
      *
-     * @param message The message that the user has given for frustration.
+     * @param message The optional message supplied by the user about their
+     * frustrating experience.
      */
     public void frustration(final String message) {
         manager.frustration(message, logSource);

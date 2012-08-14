@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.usermetrix</groupId>
-  <artifactId>UserMetrix-jclient</artifactId>  
-  <version>1.0.2</version>
+  <artifactId>UserMetrix-jclient</artifactId>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
   <name>UserMetrix-jclient</name>
   <url>http://usermetrix.com</url>
@@ -22,13 +22,25 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${basedir}/src/test/data</additionalClasspathElement>
+          </additionalClasspathElements>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.3.7</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>${project.artifactId}</Bundle-Name>
+            <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${pom.version}</Bundle-Version>
+            <Bundle-Name>${project.name}</Bundle-Name>
           </instructions>
         </configuration>
         <executions>
@@ -45,6 +57,24 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.10</version>
+    </dependency>
+
+    <dependency>
+	<groupId>ch.qos.logback</groupId>
+	<artifactId>logback-classic</artifactId>
+	<version>1.0.6</version>
+    </dependency>
+
+    <dependency>
+	<groupId>ch.qos.logback</groupId>
+	<artifactId>logback-core</artifactId>
+	<version>1.0.6</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
